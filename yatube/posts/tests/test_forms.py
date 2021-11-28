@@ -141,7 +141,6 @@ class PostCreateFormTests(TestCase):
             form_data,
             follow=True
         )
-        # form_data['image'].seek(0)
         self.assertRedirects(response, self.POST_DETAIL_URL)
         edited_post = response.context['post']
         self.assertRedirects(
