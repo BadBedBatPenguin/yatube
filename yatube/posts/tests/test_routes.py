@@ -16,6 +16,10 @@ class PostsURLTests(TestCase):
             ['post_detail', [POST_ID], f'/posts/{POST_ID}/'],
             ['post_edit', [POST_ID], f'/posts/{POST_ID}/edit/'],
             ['post_create', [], '/create/'],
+            ['add_comment', [POST_ID], f'/posts/{POST_ID}/comment'],
+            ['follow_index', [], '/follow/'],
+            ['profile_follow', [USERNAME], f'/profile/{USERNAME}/follow/'],
+            ['profile_unfollow', [USERNAME], f'/profile/{USERNAME}/unfollow/'],
         ]
         for route, prm, url in cases:
             with self.subTest(url=url):

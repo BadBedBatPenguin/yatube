@@ -10,12 +10,12 @@ class Group(models.Model):
     slug = models.SlugField(unique=True, verbose_name='Идентификатор группы')
     description = models.TextField(verbose_name='Описание')
 
-    def __str__(self) -> str:
-        return self.title
-
     class Meta:
         verbose_name = 'Группа'
         verbose_name_plural = 'Группы'
+
+    def __str__(self) -> str:
+        return self.title
 
 
 class Post(models.Model):
@@ -106,3 +106,7 @@ class Follow(models.Model):
 
     def __str__(self) -> str:
         return f'{self.user} подписан на {self.author}'
+
+    class Meta:
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'

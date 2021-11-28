@@ -11,6 +11,12 @@ CREATE_URL = reverse('posts:post_create')
 LOGIN_URL = reverse('users:login')
 GROUP_LIST_URL = reverse('posts:group_list', args=[SLUG])
 PROFILE_URL = reverse('posts:profile', args=[AUTHOR_USERNAME])
+FOLLOW_INDEX_URL = reverse('posts:follow_index')
+PROFILE_FOLLOW_URL = reverse('posts:profile_follow', args=[AUTHOR_USERNAME])
+PROFILE_UNFOLLOW_URL = reverse(
+    'posts:profile_unfollow',
+    args=[AUTHOR_USERNAME]
+)
 UNEXISTING_PAGE_URL = '/unexisting_page/'
 
 
@@ -38,17 +44,16 @@ class PostsURLTests(TestCase):
             'posts:post_edit',
             args=[cls.post.id]
         )
-        cls.POST_COMMENT_URL = reverse(
+        cls.ADD_COMMENT_URL = reverse(
             'posts:add_comment',
             args=[cls.post.id]
         )
 
-    def setUp(self):
-        self.guest = Client()
-        self.author_client = Client()
-        self.author_client.force_login(self.author)
-        self.another = Client()
-        self.another.force_login(self.user)
+        cls.guest = Client()
+        cls.author_client = Client()
+        cls.author_client.force_login(cls.author)
+        cls.another = Client()
+        cls.another.force_login(cls.user)
 
     def test_status_codes(self):
         """Страницы проекта доступны по своим адресам."""
@@ -62,6 +67,14 @@ class PostsURLTests(TestCase):
             [self.POST_EDIT_URL, self.author_client, 200],
             [CREATE_URL, self.guest, 302],
             [CREATE_URL, self.another, 200],
+            [self.ADD_COMMENT_URL, self.guest, 302],
+            [self.ADD_COMMENT_URL, self.another, 302],
+            [FOLLOW_INDEX_URL, self.guest, 302],
+            [FOLLOW_INDEX_URL, self.another, 200],
+            [PROFILE_FOLLOW_URL, self.guest, 302],
+            [PROFILE_FOLLOW_URL, self.another, 302],
+            [PROFILE_UNFOLLOW_URL, self.guest, 302],
+            [PROFILE_UNFOLLOW_URL, self.another, 302],
             [UNEXISTING_PAGE_URL, self.guest, 404],
         ]
         for url, client, code in cases:
@@ -83,12 +96,32 @@ class PostsURLTests(TestCase):
                 self.another,
                 self.POST_DETAIL_URL
             ],
-            [CREATE_URL, self.guest, f'{LOGIN_URL}?next={CREATE_URL}'],
             [
-                self.POST_COMMENT_URL,
+                CREATE_URL,
                 self.guest,
-                f'{LOGIN_URL}?next={self.POST_COMMENT_URL}'
+                f'{LOGIN_URL}?next={CREATE_URL}'
             ],
+            [
+                self.ADD_COMMENT_URL,
+                self.guest,
+                f'{LOGIN_URL}?next={self.ADD_COMMENT_URL}'
+            ],
+            [
+                FOLLOW_INDEX_URL,
+                self.guest,
+                f'{LOGIN_URL}?next={FOLLOW_INDEX_URL}'
+            ],
+            [
+                PROFILE_FOLLOW_URL,
+                self.guest,
+                f'{LOGIN_URL}?next={PROFILE_FOLLOW_URL}'
+            ],
+            [
+                PROFILE_UNFOLLOW_URL,
+                self.guest,
+                f'{LOGIN_URL}?next={PROFILE_UNFOLLOW_URL}'
+            ],
+
         ]
         for url, client, redirect_url in cases:
             with self.subTest(url=url, client=client):
@@ -106,6 +139,7 @@ class PostsURLTests(TestCase):
             self.POST_DETAIL_URL: 'posts/post_detail.html',
             self.POST_EDIT_URL: 'posts/create_post.html',
             CREATE_URL: 'posts/create_post.html',
+            FOLLOW_INDEX_URL: 'posts/follow.html',
         }
 
         for url, template in templates_pages_names.items():

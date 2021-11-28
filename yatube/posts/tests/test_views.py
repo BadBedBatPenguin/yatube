@@ -67,18 +67,16 @@ class PostPagesTest(TestCase):
             'posts:post_edit',
             kwargs={'post_id': cls.post.id}
         )
+        cls.guest_client = Client()
+        cls.authorized_author = Client()
+        cls.authorized_author.force_login(cls.author)
+        cls.authorized_another = Client()
+        cls.authorized_another.force_login(cls.another)
 
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
         shutil.rmtree(TEMP_MEDIA_ROOT, ignore_errors=True)
-
-    def setUp(self):
-        self.guest_client = Client()
-        self.authorized_author = Client()
-        self.authorized_author.force_login(self.author)
-        self.authorized_another = Client()
-        self.authorized_another.force_login(self.another)
 
     def test_posts_pages_show_correct_context(self):
         """Шаблоны приложения сформированы с правильным контекстом."""
@@ -87,10 +85,13 @@ class PostPagesTest(TestCase):
             GROUP_LIST_URL,
             PROFILE_URL,
             self.POST_DETAIL_URL,
+            FOLLOW_INDEX_URL,
+
         ]
+        models.Follow.objects.create(user=self.another, author=self.author)
         for url in urls:
             with self.subTest(url=url):
-                response = self.authorized_author.get(url)
+                response = self.authorized_another.get(url)
                 if 'page_obj' in response.context:
                     self.assertEqual(len(response.context['page_obj']), 1)
                     post = response.context['page_obj'][0]
@@ -125,11 +126,10 @@ class PostPagesTest(TestCase):
     def test_follow(self):
         """Проверяем появляется ли подписка после подписки
         """
-        response = self.authorized_another.post(
+        self.authorized_another.get(
             FOLLOW_AUTHOR_URL,
             follow=True
         )
-        self.assertRedirects(response, PROFILE_URL)
         self.assertTrue(models.Follow.objects.filter(
             user=self.another,
             author=self.author
@@ -139,19 +139,17 @@ class PostPagesTest(TestCase):
         """Проверяем удаляется ли подписка после отписки
         """
         models.Follow.objects.create(user=self.another, author=self.author)
-        response = self.authorized_another.post(
+        self.authorized_another.get(
             UNFOLLOW_AUTHOR_URL,
             follow=True
         )
-        self.assertRedirects(response, PROFILE_URL)
         self.assertFalse(models.Follow.objects.filter(
             user=self.another,
             author=self.author
         ).exists())
 
     def test_new_post_is_shown_on_follow_index(self):
-        """Проверяем что новые посты показываются в ленте
-        подписок у тех, кто подписан и не показываются в ленте
+        """Проверяем что новые посты не показываются в ленте
         тех кто не подписан
         """
         models.Follow.objects.create(user=self.another, author=self.author)
@@ -160,8 +158,6 @@ class PostPagesTest(TestCase):
             author=self.author,
             group=self.group,
         )
-        response = self.authorized_another.get(FOLLOW_INDEX_URL)
-        self.assertIn(new_post, response.context['page_obj'])
         response = self.authorized_author.get(FOLLOW_INDEX_URL)
         self.assertNotIn(new_post, response.context['page_obj'])
 
@@ -183,10 +179,8 @@ class PaginatorViewsTest(TestCase):
         )] * (settings.POSTS_PER_PAGE + 1)
 
         models.Post.objects.bulk_create(post_list)
-
-    def setUp(self):
-        self.guest_client = Client()
-        self.URLS = [
+        cls.guest_client = Client()
+        cls.URLS = [
             INDEX_URL,
             GROUP_LIST_URL,
             PROFILE_URL
