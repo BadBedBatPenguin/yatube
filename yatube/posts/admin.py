@@ -1,4 +1,4 @@
-from .models import Comment, Group, Post
+from .models import Comment, Follow, Group, Post
 
 from django.contrib import admin
 
@@ -45,3 +45,15 @@ class CommentAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Comment, CommentAdmin)
+
+
+class FollowAdmin(admin.ModelAdmin):
+    list_display = (
+        'author',
+        'user',
+    )
+    list_filter = ('author', 'user',)
+    empty_value_display = '-пусто-'
+
+
+admin.site.register(Follow, FollowAdmin)

@@ -14,7 +14,7 @@
   </p>
   {% for post in page_obj %}
     <article>
-      {% include 'posts/includes/post_description.html' with group_list=True %}
+      {% include 'posts/includes/post_card.html' with group_list=True %}
     </article>
     {% if not forloop.last %}<hr>{% endif %}
   {% endfor %}

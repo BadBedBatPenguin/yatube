@@ -6,12 +6,7 @@
 {% block content %}
   <div class="row">
     <article class="col-12 col-md-9">
-      {% include 'posts/includes/post_description.html' with post_detail=True %}
-      {% if user == post.author %}
-        <a class="btn btn-primary" href="{% url 'posts:post_edit' post.id %}">
-                редактировать запись
-        </a>
-      {% endif %}
+      {% include 'posts/includes/post_card.html' with post_detail=True %}
       {% include 'posts/includes/comments.html' %}
     </article> 
   </div>

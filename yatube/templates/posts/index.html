@@ -11,9 +11,10 @@
   
   <h1>Последние обновления на сайте</h1>
   {% cache 20 index_cache page_obj.number %}
-  {% for post in page_obj  %}
-    {% include 'posts/includes/post_description.html' %}
-  {% endfor %}
+    {% for post in page_obj  %}
+      {% include 'posts/includes/post_card.html' %}
+      {% if not forloop.last %}<hr>{% endif %}
+    {% endfor %}
   {% endcache %}
   {% include 'posts/includes/paginator.html' %}
   

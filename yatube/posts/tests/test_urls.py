@@ -44,10 +44,6 @@ class PostsURLTests(TestCase):
             'posts:post_edit',
             args=[cls.post.id]
         )
-        cls.ADD_COMMENT_URL = reverse(
-            'posts:add_comment',
-            args=[cls.post.id]
-        )
 
         cls.guest = Client()
         cls.author_client = Client()
@@ -67,8 +63,6 @@ class PostsURLTests(TestCase):
             [self.POST_EDIT_URL, self.author_client, 200],
             [CREATE_URL, self.guest, 302],
             [CREATE_URL, self.another, 200],
-            [self.ADD_COMMENT_URL, self.guest, 302],
-            [self.ADD_COMMENT_URL, self.another, 302],
             [FOLLOW_INDEX_URL, self.guest, 302],
             [FOLLOW_INDEX_URL, self.another, 200],
             [PROFILE_FOLLOW_URL, self.guest, 302],
@@ -102,11 +96,6 @@ class PostsURLTests(TestCase):
                 f'{LOGIN_URL}?next={CREATE_URL}'
             ],
             [
-                self.ADD_COMMENT_URL,
-                self.guest,
-                f'{LOGIN_URL}?next={self.ADD_COMMENT_URL}'
-            ],
-            [
                 FOLLOW_INDEX_URL,
                 self.guest,
                 f'{LOGIN_URL}?next={FOLLOW_INDEX_URL}'
@@ -130,8 +119,8 @@ class PostsURLTests(TestCase):
                     redirect_url
                 )
 
-    def test_pages_use_correct_template(self):
-        """URL-адрес использует соответствующий шаблон."""
+    def test_controllers_use_correct_template(self):
+        """Контроллер использует соответствующий шаблон."""
         templates_pages_names = {
             INDEX_URL: 'posts/index.html',
             GROUP_LIST_URL: 'posts/group_list.html',

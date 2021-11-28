@@ -110,6 +110,7 @@ class PostPagesTest(TestCase):
         self.assertEqual(group.title, self.group.title)
         self.assertEqual(group.slug, self.group.slug)
         self.assertEqual(group.description, self.group.description)
+        self.assertEqual(group.id, self.group.id)
 
     def test_profile_page_show_correct_context(self):
         """В шаблон страницы profile передан правильный пользователь."""
@@ -148,7 +149,7 @@ class PostPagesTest(TestCase):
             author=self.author
         ).exists())
 
-    def test_new_post_is_shown_on_follow_index(self):
+    def test_new_post_is_not_shown_on_wrong_follow_index(self):
         """Проверяем что новые посты не показываются в ленте
         тех кто не подписан
         """
