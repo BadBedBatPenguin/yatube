@@ -115,10 +115,7 @@ class PostCreateFormTests(TestCase):
         self.assertEqual(new_post.text, self.FORM_DATA1['text'])
         self.assertEqual(new_post.group.id, self.FORM_DATA1['group'])
         self.assertEqual(new_post.author, self.author)
-        self.assertEqual(
-            new_post.image.seek(0),
-            self.FORM_DATA1['image'].seek(0)
-        )
+        self.assertTrue(new_post.image, self.FORM_DATA1['image'])
 
     def test_anonymous_cant_create_post(self):
         """Анонимный пользователь не может создать пост."""
@@ -152,7 +149,7 @@ class PostCreateFormTests(TestCase):
         self.assertEqual(edited_post.text, self.FORM_DATA2['text'])
         self.assertEqual(edited_post.group.id, self.FORM_DATA2['group'])
         self.assertEqual(edited_post.author, self.post.author)
-        self.assertEqual(edited_post.image.seek(0), UPLOADED.seek(0))
+        self.assertTrue(edited_post.image, UPLOADED)
 
     def test_anonymous_and_nonauthor_cant_edit_post(self):
         """Анонимный пользователь и не автор не могут редактировать пост."""
@@ -164,22 +161,16 @@ class PostCreateFormTests(TestCase):
         ]
         for user, redirect_url in cases:
             with self.subTest(user=user):
+                post = self.post
                 response = user.post(
                     self.POST_EDIT_URL,
                     data=self.FORM_DATA2,
                     follow=True
                 )
-                edited_post = self.post
                 self.assertRedirects(response, redirect_url)
-                self.assertNotEqual(edited_post.text, self.FORM_DATA2['text'])
-                self.assertNotEqual(
-                    edited_post.group.id,
-                    self.FORM_DATA2['group']
-                )
-                self.assertNotEqual(
-                    edited_post.image,
-                    UPLOADED
-                )
+                self.assertEqual(self.post.text, post.text)
+                self.assertEqual(self.post.group.id, post.group.id)
+                self.assertEqual(self.post.image, post.image)
                 self.assertEqual(models.Post.objects.count(), posts_count)
 
     def test_post_edit_create_show_correct_context(self):
@@ -205,34 +196,43 @@ class PostCreateFormTests(TestCase):
         """Форма add_comment создает комментарий и он показывается
         на странице поста.
         """
-        response = self.author_client.post(
+        comments_ids = set(models.Comment.objects.all().values_list(
+            "id",
+            flat=True
+        ))
+        self.user.post(
             self.ADD_COMENT_URL,
             COMMENT_FORM_DATA,
             follow=True
         )
+        new_comments = models.Comment.objects.exclude(id__in=comments_ids)
+        self.assertEqual(len(new_comments), 1)
+        new_comment = new_comments[0]
         self.assertEqual(
-            response.context['post'].comments.all()[0].text,
+            new_comment.text,
             COMMENT_FORM_DATA['text']
         )
         self.assertEqual(
-            response.context['post'],
-            self.post
-        )
-        self.assertEqual(
-            response.context['post'].comments.all()[0].author,
-            self.post.author
+            new_comment.author,
+            self.nonauthor
         )
 
     def test_anonymous_cant_comment(self):
-        comments_count = self.post.comments.all().count()
+        """Анонимный пользователь не может создать комментарий"""
+        comments_count = models.Comment.objects.count()
+        comments_ids = set(models.Comment.objects.all().values_list(
+            "id",
+            flat=True
+        ))
         response = self.guest.post(
             self.ADD_COMENT_URL,
             COMMENT_FORM_DATA,
             follow=True
         )
+        new_comments = models.Comment.objects.exclude(id__in=comments_ids)
+        self.assertEqual(len(new_comments), 0)
         self.assertRedirects(
             response,
             f'{LOGIN_URL}?next={self.ADD_COMENT_URL}'
         )
-        comments_count_after_post = self.post.comments.all().count()
-        self.assertEqual(comments_count, comments_count_after_post)
+        self.assertEqual(models.Comment.objects.count(), comments_count)

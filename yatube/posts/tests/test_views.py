@@ -153,14 +153,8 @@ class PostPagesTest(TestCase):
         """Проверяем что новые посты не показываются в ленте
         тех кто не подписан
         """
-        models.Follow.objects.create(user=self.another, author=self.author)
-        new_post = models.Post.objects.create(
-            text='Тестовый текст',
-            author=self.author,
-            group=self.group,
-        )
-        response = self.authorized_author.get(FOLLOW_INDEX_URL)
-        self.assertNotIn(new_post, response.context['page_obj'])
+        response = self.authorized_another.get(FOLLOW_INDEX_URL)
+        self.assertNotIn(self.post, response.context['page_obj'])
 
 
 class PaginatorViewsTest(TestCase):
