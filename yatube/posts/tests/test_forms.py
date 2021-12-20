@@ -170,6 +170,7 @@ class PostCreateFormTests(TestCase):
                 self.assertRedirects(response, redirect_url)
                 self.assertEqual(self.post.text, post.text)
                 self.assertEqual(self.post.group.id, post.group.id)
+                self.assertEqual(self.post.author, post.author)
                 self.assertEqual(self.post.image, post.image)
                 self.assertEqual(models.Post.objects.count(), posts_count)
 
@@ -215,6 +216,10 @@ class PostCreateFormTests(TestCase):
         self.assertEqual(
             new_comment.author,
             self.nonauthor
+        )
+        self.assertEqual(
+            new_comment.post,
+            self.post
         )
 
     def test_anonymous_cant_comment(self):
