@@ -7,7 +7,7 @@
 Клонировать репозиторий и перейти в него в командной строке:
 
 ```Shell
-git clone https://github.com/BadBedBatPenguin/Yatube.git
+git clone https://github.com/BadBedBatPenguin/yatube.git
 ```
 
 ```Shell
