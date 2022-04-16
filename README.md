@@ -1,10 +1,11 @@
 ## Yatube
+Social network where user may create his own account, post text and pictures, follow another users and comment posts.
+Used technologies: Django, Django ORM, SQLite, Unittest
 
-Социальная сеть с постами, комментами и лентой подписок :)
 
-## Как запустить проект
+## How to run project
 
-Клонировать репозиторий и перейти в него в командной строке:
+Clone repo and move to its directory:
 
 ```Shell
 git clone https://github.com/BadBedBatPenguin/yatube.git
@@ -14,7 +15,7 @@ git clone https://github.com/BadBedBatPenguin/yatube.git
 cd Yatube
 ```
 
-Cоздать и активировать виртуальное окружение:
+Create and activate virtual environment:
 
 ```Shell
 python3 -m venv env
@@ -24,7 +25,7 @@ python3 -m venv env
 source env/bin/activate
 ```
 
-Установить зависимости из файла requirements.txt:
+Install packages from requirements.txt:
 
 ```Shell
 python3 -m pip install --upgrade pip
@@ -34,25 +35,18 @@ python3 -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-Выполнить миграции:
+Migrate:
 
 ```Shell
 python3 manage.py migrate
 ```
 
-Запустить проект:
+Run project:
 
 ```Shell
 python3 manage.py runserver
 ```
 
-## Использованные технологии
+## Author
 
-Django\
-Django ORM\
-SQLite\
-Unittest
-
-## Автор
-
-Цёсь Максим ([BadBedBatPenguin] (https://github.com/BadBedBatPenguin))
+Max Tsyos ([BadBedBatPenguin](https://github.com/BadBedBatPenguin))
