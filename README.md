@@ -1,5 +1,5 @@
 ## Yatube
-Social network where user may create his own account, post text and pictures, follow another users and comment posts.
+Social network where user may create his own account, post text and pictures, follow another users and comment posts. \
 Used technologies: Django, Django ORM, SQLite, Unittest
 
 
