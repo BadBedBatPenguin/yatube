@@ -47,6 +47,3 @@ Run project:
 python3 manage.py runserver
 ```
 
-## Author
-
-Max Tsyos ([BadBedBatPenguin](https://github.com/BadBedBatPenguin))
